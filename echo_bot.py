@@ -51,8 +51,7 @@ def handle_text_message(event):
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
                     messages=[
-                        TextMessage(text="From: " + profile.display_name),
-                        TextMessage(text="Received message: " + text),
+                        TextMessage(text=f"{profile.display_name}から「{text}」が送信されました。"),
                     ],
                 )
             )
