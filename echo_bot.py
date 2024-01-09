@@ -40,6 +40,18 @@ def callback():
     return "OK"
 
 
+def generate_response(from_whom, received_msg):
+    res = []
+    res.append(TextMessage(text=f"あー{from_whom}さん。。。"))
+    if "おはよう" in received_msg:
+        res.append(TextMessage(text=f"おはようございます！"))
+    elif "こんにちは" in received_msg:
+        res.append(TextMessage(text=f"こんにちは！"))
+    else:
+        res.append(TextMessage(text=f"そうですねぇ。。。"))
+    return res
+
+
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
     text = event.message.text
@@ -47,14 +59,8 @@ def handle_text_message(event):
         line_bot_api = MessagingApi(api_client)
         if isinstance(event.source, UserSource):
             profile = line_bot_api.get_profile(event.source.user_id)
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[
-                        TextMessage(text=f"{profile.display_name}から「{text}」が送信されました。"),
-                    ],
-                )
-            )
+            res = generate_response(profile.display_name, text)
+            line_bot_api.reply_message_with_http_info(ReplyMessageRequest(reply_token=event.reply_token, messages=res))
         else:
             line_bot_api.reply_message_with_http_info(
                 ReplyMessageRequest(
