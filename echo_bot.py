@@ -40,15 +40,15 @@ def callback():
     return "OK"
 
 
-def generate_response(from_whom, received_msg):
+def generate_response(from_user, text):
     res = []
-    res.append(TextMessage(text=f"あー{from_whom}さん。。。"))
-    if "おはよう" in received_msg:
-        res.append(TextMessage(text=f"おはようございます！"))
-    elif "こんにちは" in received_msg:
-        res.append(TextMessage(text=f"こんにちは！"))
+    res.append(TextMessage(text=f"あー{from_user}さん。。。"))
+    if "こん" in text:
+        res.append(TextMessage(text="こんちゃー"))
+    elif "おは" in text:
+        res.append(TextMessage(text="おはこんばんわ"))
     else:
-        res.append(TextMessage(text=f"そうですねぇ。。。"))
+        res.append(TextMessage(text=f"「{text}」って言った？"))
     return res
 
 
