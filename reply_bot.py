@@ -22,6 +22,7 @@ configuration = Configuration(access_token=channel_access_token)
 app = Flask(__name__)
 
 
+# LINEボットからのリクエストを受け取るエンドポイント
 @app.route("/callback", methods=["POST"])
 def callback():
     # get X-Line-Signature header value
@@ -39,9 +40,12 @@ def callback():
 
     return "OK"
 
+
 import random
 import datetime
 
+
+# 　返信メッセージを生成する関数
 def generate_response(from_user, text):
     res = []
     res.append(TextMessage(text=f"あー{from_user}さん。。。"))
@@ -54,27 +58,35 @@ def generate_response(from_user, text):
         res.append(TextMessage(text=f"今は{now.hour}時{now.minute}分ですよ"))
     else:
         msg_templates = ["ホゲホゲ", "そうねぇ", f"「{text}」って言ったね？"]
-        msg_num = len(msg_templates) # メッセージの数
-        idx = random.randrange(msg_num) # 0からmsg_num-1までの乱数を生成
+        msg_num = len(msg_templates)  # メッセージの数
+        idx = random.randrange(msg_num)  # 0からmsg_num-1までの乱数を生成
         res.append(TextMessage(text=msg_templates[idx]))
     return res
 
 
+# メッセージを受け取った時の処理
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
+    # 送られてきたメッセージを取得
     text = event.message.text
+
+    # 返信メッセージを作成
+    res = []
+    if isinstance(event.source, UserSource):
+        profile = line_bot_api.get_profile(event.source.user_id)
+        res = generate_response(profile.display_name, text)
+    else:
+        # fmt: off
+        res = [
+            TextMessage(text="ユーザー情報を取得できませんでした。"),
+            TextMessage(text=f"メッセージ：{text}")
+        ]
+        # fmt: on
+
+    # 返信メッセージの送信
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
-        if isinstance(event.source, UserSource):
-            profile = line_bot_api.get_profile(event.source.user_id)
-            res = generate_response(profile.display_name, text)
-            line_bot_api.reply_message_with_http_info(ReplyMessageRequest(reply_token=event.reply_token, messages=res))
-        else:
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token, messages=[TextMessage(text="Received message: " + text)]
-                )
-            )
+        line_bot_api.reply_message_with_http_info(ReplyMessageRequest(reply_token=event.reply_token, messages=res))
 
 
 if __name__ == "__main__":
