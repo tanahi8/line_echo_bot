@@ -73,10 +73,14 @@ def handle_text_message(event):
     # 返信メッセージを作成
     res = []
     if isinstance(event.source, UserSource):
+        # ユーザー情報が取得できた場合
         profile = line_bot_api.get_profile(event.source.user_id)
+        # 返信メッセージを生成
         res = generate_response(profile.display_name, text)
     else:
+        # ユーザー情報が取得できなかった場合
         # fmt: off
+        # 定型文の返信メッセージ
         res = [
             TextMessage(text="ユーザー情報を取得できませんでした。"),
             TextMessage(text=f"メッセージ：{text}")
