@@ -47,18 +47,20 @@ def handle_text_message(event):
     # 送られてきたメッセージを取得
     text = event.message.text
 
-    # 返信メッセージを作成
-    res = []
-    if isinstance(event.source, UserSource):
-        profile = line_bot_api.get_profile(event.source.user_id)
-        res.append(TextMessage(text=f"{profile.display_name} から次のようなメッセージを受け取りました。"))
-    else:
-        res.append(TextMessage(text="ユーザー情報を取得できませんでした。"))
-    res.append(TextMessage(text=f"メッセージ：{text}"))
-
-    # メッセージの返信
+    # 返信メッセージの送信
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
+
+        # 返信メッセージを作成
+        res = []
+        if isinstance(event.source, UserSource):
+            profile = line_bot_api.get_profile(event.source.user_id)
+            res.append(TextMessage(text=f"{profile.display_name} から次のようなメッセージを受け取りました。"))
+        else:
+            res.append(TextMessage(text="ユーザー情報を取得できませんでした。"))
+        res.append(TextMessage(text=f"メッセージ：{text}"))
+
+        # メッセージの返信
         line_bot_api.reply_message_with_http_info(ReplyMessageRequest(reply_token=event.reply_token, messages=res))
 
 
