@@ -1,3 +1,4 @@
+
 import os
 import sys
 
@@ -49,7 +50,7 @@ import datetime
 def generate_response(from_user, text):
     res = []
     res.append(TextMessage(text=f"あー{from_user}さん。。。"))
-    if "こん" in text:
+    if "こん" == text[:2] or "こん" == text[1:3]
         res.append(TextMessage(text="こんちゃー"))
     elif "おは" in text:
         res.append(TextMessage(text="おはこんばんわ"))
