@@ -62,7 +62,11 @@ def generate_response(from_user, text):
         msg_num = len(msg_templates)  # メッセージの数
         idx = random.randrange(msg_num)  # 0からmsg_num-1までの乱数を生成
         res.append(TextMessage(text=msg_templates[idx]))
+    elif "ラッキーナンバー" in text:
+    random_number = random.randint(1, 100)  # 1～100の乱数
+    reply_text = f"あなたのラッキーナンバーは: {random_number} です！"
     return res
+
 
 
 # メッセージを受け取った時の処理
